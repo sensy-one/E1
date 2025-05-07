@@ -1,7 +1,7 @@
 
 ## 🚀 See More. Sense More. Automate Like Never Before.
 
-![Sensy-One Banner](https://github.com/sensy-one/E1/blob/main/assets/images/center-white.jpeg)
+![Sensy-One Banner](https://github.com/sensy-one/E1/blob/main/assets/images/banner-e1.jpg)
 
 Introducing the Sensy-One E1 – the smallest and most powerful mmWave sensor on the market.
 After months of prototyping, fine-tuning the firmware, and testing, we have developed a sensor that sets a new performance standard. The E1 delivers near-instant motion detection, exceptional accuracy, and seamless Home Assistant integration.
