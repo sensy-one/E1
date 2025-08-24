@@ -4,7 +4,7 @@ esphome:
   name_add_mac_suffix: True
   project: 
     name: Sensy-One.E1 mmWave Sensor
-    version: v1.1.0
+    version: v1.1.1
 
 external_components:
   - source:
@@ -15,6 +15,8 @@ esp32:
   board: esp32-s3-devkitc-1
   framework:
     type: esp-idf
+    sdkconfig_options:
+      CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE: n
 
 ethernet:
   type: W5500
@@ -674,7 +676,7 @@ binary_sensor:
     lambda: |-
       static unsigned long last_off_1 = 0;
       unsigned long now = millis();
-      bool pres1 = (id(target1_distance).state > 0 &&
+      bool pree1 = (id(target1_distance).state > 0 &&
                    id(target1_x).state >= id(zone1_x_begin).state &&
                    id(target1_x).state <= id(zone1_x_end).state &&
                    id(target1_y).state >= id(zone1_y_begin).state &&
@@ -689,7 +691,7 @@ binary_sensor:
                    id(target3_x).state <= id(zone1_x_end).state &&
                    id(target3_y).state >= id(zone1_y_begin).state &&
                    id(target3_y).state <= id(zone1_y_end).state);
-      if (pres1) {
+      if (pree1) {
         last_off_1 = now;
         return true;
       }
