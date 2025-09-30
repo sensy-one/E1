@@ -18,7 +18,7 @@ Track up to three targets simultaneously in real time. The Hi-Link LD2450 accura
 
 **Customizable Detection Zones**  
 
-Our sensor offers flexible monitoring with up to 10 customizable detection zones and one exclusion zone. Each detection zone includes three dedicated sensors that measure movement, presence, and target count, providing detailed insights into activity. Adjustable motion thresholds and timeouts allow you to fine-tune the sensor’s sensitivity and response, ensuring optimal performance in any environment.
+Our sensor offers flexible monitoring with up to 3 customizable detection zones and one exclusion zone. Each detection zone includes three dedicated sensors that measure movement, presence, and target count, providing detailed insights into activity. Adjustable motion thresholds and timeouts allow you to fine-tune the sensor’s sensitivity and response, ensuring optimal performance in any environment.
 
 **Power-Packed Performance**  
 
@@ -66,6 +66,8 @@ Instead of adjusting multiple number entities, you can now set zones visually us
 - Save your configuration — it will be applied immediately to your device.
 
 > Note: Make sure your desktop is connected to the same network as your Home Assistant / Sensor.
+
+> Tip: If you run into trouble, you can always have a look at the [YouTube video](https://www.youtube.com/watch?v=raLACrPG8EM) for guidance.
 
 ## 🔄 Firmware on the Fly
 
