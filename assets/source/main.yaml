@@ -4,13 +4,78 @@ esphome:
   name_add_mac_suffix: True
   project: 
     name: Sensy-One.E1 mmWave Sensor
-    version: v1.2.3
+    version: v1.2.4
 
   on_boot:
   - priority: 800
     then:
-      - lambda: |-
-          id(holding_enabled_bool) = id(holding_switch_internal).state;
+      - if:
+          condition:
+            lambda: 'return id(holding_enabled_bool);'
+          then:
+            - switch.template.publish:
+                id: holding_switch_internal
+                state: true
+            - switch.template.publish:
+                id: holding_switch
+                state: true
+          else:
+            - switch.template.publish:
+                id: holding_switch_internal
+                state: false
+            - switch.template.publish:
+                id: holding_switch
+                state: false
+
+      - if:
+          condition:
+            lambda: 'return id(flip_y_state);'
+          then:
+            - switch.template.publish:
+                id: flip_y
+                state: true
+            - switch.template.publish:
+                id: flip_y_switch
+                state: true
+          else:
+            - switch.template.publish:
+                id: flip_y
+                state: false
+            - switch.template.publish:
+                id: flip_y_switch
+                state: false
+
+      - if:
+          condition:
+            lambda: 'return id(radar_bt_enabled);'
+          then:
+            - switch.template.publish:
+                id: radar_bluetooth_switch
+                state: true
+            - lambda: |-
+                id(e1_sensor)->turn_bluetooth_on();
+          else:
+            - switch.template.publish:
+                id: radar_bluetooth_switch
+                state: false
+            - lambda: |-
+                id(e1_sensor)->turn_bluetooth_off();
+
+      - if:
+          condition:
+            lambda: 'return id(radar_single_mode);'
+          then:
+            - switch.template.publish:
+                id: radar_tracking_mode_switch
+                state: true
+            - lambda: |-
+                id(e1_sensor)->set_single_target_tracking();
+          else:
+            - switch.template.publish:
+                id: radar_tracking_mode_switch
+                state: false
+            - lambda: |-
+                id(e1_sensor)->set_multi_target_tracking();
 
 external_components:
   - source:
@@ -60,32 +125,27 @@ globals:
     restore_value: true
     initial_value: 'false'
 
+  - id: onboarding_done
+    type: bool
+    restore_value: true
+    initial_value: 'false'
+
   - id: holding_enabled_bool
     type: bool
     restore_value: true
     initial_value: 'true'
 
+  - id: radar_bt_enabled
+    type: bool
+    restore_value: true
+    initial_value: 'false'
+
+  - id: radar_single_mode
+    type: bool
+    restore_value: true
+    initial_value: 'false'
+
 button:
-  - platform: template
-    name: "RADAR | Flip Y Axis"
-    entity_category: config
-    icon: "mdi:axis-y-rotate-clockwise"
-    on_press:
-      then:
-        - lambda: |-
-            id(flip_y_state) = !id(flip_y_state);
-        - if:
-            condition:
-              lambda: 'return id(flip_y_state);'
-            then:
-              - switch.template.publish:
-                  id: flip_y
-                  state: true
-            else:
-              - switch.template.publish:
-                  id: flip_y
-                  state: false
-                  
   - platform: factory_reset
     name: "ESP32 | Factory Reset"
     entity_category: config
@@ -96,24 +156,6 @@ button:
     id: restart_btn
     entity_category: config
     icon: mdi:restart
-
-  - platform: template
-    name: "RADAR | Single Target"
-    entity_category: config
-    icon: mdi:account
-    on_press:
-      then:
-        - lambda: |-
-            id(e1_sensor)->set_single_target_tracking();
-
-  - platform: template
-    name: "RADAR | Multi Target"
-    entity_category: config
-    icon: mdi:account-group
-    on_press:
-      then:
-        - lambda: |-
-            id(e1_sensor)->set_multi_target_tracking();
 
   - platform: template
     name: "RADAR | Restart Module"
@@ -136,19 +178,18 @@ button:
         - lambda: |-
             id(e1_sensor)->restart_module();
 
-  - platform: template
-    name: "RADAR | Toggle Holding Engine"
-    id: radar_toggle_holding_btn
-    icon: mdi:account-clock
-    entity_category: config
-    on_press:
-      - switch.toggle: holding_switch
-
 switch:
   - platform: template
     id: flip_y
-    optimistic: true
     internal: true
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
+
+  - platform: template
+    id: holding_switch_internal
+    internal: true
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
 
   - platform: template
     id: holding_switch
@@ -171,10 +212,62 @@ switch:
           state: false
 
   - platform: template
-    id: holding_switch_internal
-    internal: true
+    id: flip_y_switch
+    name: "RADAR | Flip Y Axis"
+    icon: mdi:axis-y-rotate-clockwise
+    entity_category: config
     optimistic: true
     restore_mode: RESTORE_DEFAULT_OFF
+    turn_on_action:
+      - lambda: |-
+          id(flip_y_state) = true;
+      - switch.template.publish:
+          id: flip_y
+          state: true
+    turn_off_action:
+      - lambda: |-
+          id(flip_y_state) = false;
+      - switch.template.publish:
+          id: flip_y
+          state: false
+
+  - platform: template
+    id: radar_bluetooth_switch
+    name: "RADAR | Bluetooth"
+    icon: mdi:bluetooth
+    entity_category: config
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
+    turn_on_action:
+      - lambda: |-
+          id(radar_bt_enabled) = true;
+          id(e1_sensor)->turn_bluetooth_on();
+      - delay: 250ms
+      - lambda: |-
+          id(e1_sensor)->restart_module();
+    turn_off_action:
+      - lambda: |-
+          id(radar_bt_enabled) = false;
+          id(e1_sensor)->turn_bluetooth_off();
+      - delay: 250ms
+      - lambda: |-
+          id(e1_sensor)->restart_module();
+
+  - platform: template
+    id: radar_tracking_mode_switch
+    name: "RADAR | Single Target"
+    icon: mdi:account
+    entity_category: config
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
+    turn_on_action:
+      - lambda: |-
+          id(radar_single_mode) = true;   // ON = single
+          id(e1_sensor)->set_single_target_tracking();
+    turn_off_action:
+      - lambda: |-
+          id(radar_single_mode) = false;  // OFF = multi
+          id(e1_sensor)->set_multi_target_tracking();
 
 sensor:
   - platform: e1
@@ -280,18 +373,6 @@ sensor:
     stationary_time_s: stationary_time_s
     dropout_hold_m: dropout_hold_m
     holding_enabled: holding_switch_internal
-
-    tracking_mode:
-      name: "RADAR | Tracking Mode"
-      id: radar_tracking_mode
-      entity_category: diagnostic
-      icon: mdi:radar
-
-    bluetooth_state:
-     name: "RADAR | Bluetooth"
-     id: radar_bluetooth_state
-     entity_category: diagnostic
-     icon: mdi:bluetooth
 
     target1_state:
       name: "Target 1 State"
