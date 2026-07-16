@@ -4,7 +4,7 @@ esphome:
   name_add_mac_suffix: True
   project: 
     name: Sensy-One.E1 mmWave Sensor
-    version: v1.2.4
+    version: v1.2.5
 
   on_boot:
   - priority: 800
