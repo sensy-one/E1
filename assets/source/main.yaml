@@ -1,10 +1,11 @@
 esphome:
+  min_version: 2026.11.0
   name: sensy-one
   friendly_name: Sensy One
   name_add_mac_suffix: True
   project: 
     name: Sensy-One.E1 mmWave Sensor
-    version: v1.2.6
+    version: v1.2.7
 
   on_boot:
   - priority: 800
@@ -101,6 +102,7 @@ ethernet:
 
 logger:
   level: NONE
+  boot_log_level: NONE
   baud_rate: 0
 
 api:
